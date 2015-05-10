@@ -1,5 +1,5 @@
 <?php
-	class database{
+	class database extends General{
 		protected $db;
 
 		public function __construct(){
@@ -21,13 +21,13 @@
 					}
 					switch ($option) {
 						case 'equal':
-							$str = $index.' = '.$value;
+							$str = $index.' = '.$this->formatValue($value);
 							break;
 						case 'like':
-							$str = $index.' LIKE "%'.$value.'%"';
+							$str = $index.' LIKE "%'.$this->formatValue($value).'%"';
 							break;
 						default:
-							$str = $index.' = '.$value;
+							$str = $index.' = '.$this->formatValue($value);
 							break;
 					}
 				}
