@@ -1,13 +1,13 @@
 <?php
 	class database extends General{
 		protected $db;
-		protected $table;
+		public $table;
 
 		public function __construct(){
 			$this->db = new PDO('mysql:host=localhost;dbname=default;','root','');
 		}
 
-		public function SqlValue($value){
+		public function SqlOpen($value){
         	if (!is_numeric($value)) {
         		return '"'.$value.'"';
         	}else{
@@ -25,15 +25,21 @@
 		public function opensql($sql){
 			$qry = $this->db->query($sql);
 			$qry->setFetchMode(PDO::FETCH_ASSOC);
-			return $qry->fetch(PDO::FETCH_ASSOC);
+			return $qry->fetchAll();
 		}
 
-		public function read($table, array $where = null, $option = 'equal', array $fields = null){
+		public function read(array $where = null, $option = 'equal', array $fields = null, $limit = 0, $offSet = 0, array $order = null){
 
 			try{
 				$strFields = (count($fields) > 0 ? implode($fields, ', ') : '*');
 
-				$sql = 'SELECT '.$strFields.' FROM '.$table;
+				$limit = '';
+
+				if (($limit > 0 )&&($offset > 0)){
+					$strLimit = ' LIMIT '.$limit.','.$offSet;
+				}
+
+				$sql = 'SELECT '.$strFields.' FROM '.$this->table;
 
 				if(count($where) > 0){				
 					$str = '';
@@ -53,7 +59,7 @@
 								break;
 						}
 					}
-					$sql = $sql.' '.$str;
+					$sql = $sql.' '.$str.$limit;
 				}
 
 				if(strlen($sql) > 0){

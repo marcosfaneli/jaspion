@@ -8,20 +8,29 @@
         private $controller;
         private $attribute = array();
                 
-        public function __construct($value){
-            $this->url = $value;
-            $str = explode('/',$this->url);
-            $this->nameController = $str[0];
-            $this->nameAction = (isset($str[1]) ? $str[1] : $this->defaultAction);
-
+        public function __construct($value = ''){
+            if(strlen($value) > 0){
+                $this->url = $value;
+                $str = explode('/',$this->url);
+                $this->nameController = $str[0];
+                $this->nameAction = ((strlen($str[1]) > 0) ? $str[1] : $this->defaultAction);
+            }else{
+                $this->nameController = $this->defaultController;
+                $this->nameAction = $this->defaultAction;
+            }
+            
             /* Carrega arquivos comuns*/
             require_once(PATH_FILES.'/core/control.php');
             require_once(PATH_FILES.'/core/database.php');
 
+            $this->CatchAttribute($str);
+
             $this->loadModel($this->nameController);
 
+        }
+
+        public function run(){
             if($this->InstantClass()){
-                $this->CatchAttribute($str);
                 $this->CallAction();
             }
         }
@@ -43,12 +52,8 @@
                 require_once(PATH_FILES.$this->pathController.$this->nameController.'.php');
                 $this->controller = new $this->nameController();
                 return true;
-            }elseif(file_exists(PATH_FILES.$this->pathController.$this->defaultController.'.php')){
-                require_once(PATH_FILES.$this->pathController.$this->defaultController.'.php');
-                $this->controller = new $this->defaultController();
-                return true;
             }else{
-                print('Não encontrado!');
+                $this->pageError();
                 return false;
             }
         }
@@ -56,10 +61,14 @@
         /* Carrega método correspondente a action informada na url */
         private function CallAction(){
             $action = $this->nameAction;
-            if (count($this->attribute) > 0){
-                $this->controller->$action($this->attribute);
+            if(method_exists($this->controller, $action)){
+                if (count($this->attribute) > 0){
+                    $this->controller->$action($this->attribute);
+                }else{
+                    $this->controller->$action();
+                }
             }else{
-                $this->controller->$action();
+                $this->pageError();
             }
             
         }

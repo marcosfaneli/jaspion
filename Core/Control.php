@@ -12,7 +12,7 @@
 
 		protected function makeJson($value){
     		$objJson = json_encode($value);
-			print($objJson);
+			return $objJson;
     	}
 
     	protected function load($value = ''){
@@ -24,10 +24,6 @@
             }else{
                 $this->pageError(PATH_FILES.$this->pathView.$this->nameView.'/'.$value.'.php');
             }
-    	}
-
-    	public function pageError($value = ''){
-    		require_once(PATH_FILES.$this->commonFiles.'error.php');
     	}
 	}
 ?>

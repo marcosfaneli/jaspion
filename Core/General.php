@@ -10,5 +10,9 @@
         public $cssDir = '/__css/';
         public $imgDir = '/__css/imgs/';
         public $systemName = 'Jaspion';
+
+        public function pageError($value = ''){
+            require_once(PATH_FILES.$this->commonFiles.'error.php');
+        }
     }
 ?>
