@@ -1,7 +1,7 @@
 <?php
     require_once('General.php');
 
-    class Jaspion extends General{
+    class jaspion extends general{
         private $url;
         private $nameController;
         private $nameAction;
@@ -12,21 +12,25 @@
             $this->url = $value;
             $str = explode('/',$this->url);
             $this->nameController = $str[0];
-            $this->nameAction = (isset($str[1]) ? $str[1] : '');
-            
+            $this->nameAction = (isset($str[1]) ? $str[1] : $this->defaultAction);
+
+            /* Carrega arquivos comuns*/
+            require_once(PATH_FILES.'/core/control.php');
+            require_once(PATH_FILES.'/core/database.php');
+
+            $this->loadModel($this->nameController);
+
             if($this->InstantClass()){
-                $this->path = $this->systemName.'>'.$this->nameController.'>'.$this->nameAction;
                 $this->CatchAttribute($str);
                 $this->CallAction();
             }
         }
 
         /* Carrega models*/
-        private function __autoload(){
-            $path = PATH_FILES.$this->pathModel.$this->nameController.'.php';
+        private function loadModel($file){
+            $path = PATH_FILES.$this->pathModel.$file.'.php';
             if(file_exists($path)){
                 require_once($path);
-                $this->controller = new $this->nameController();
                 return true;
             }else{
                 return false;
@@ -36,23 +40,13 @@
         /* Instância classe */
         private function InstantClass(){
             if(file_exists(PATH_FILES.$this->pathController.$this->nameController.'.php')){
-                $path = PATH_FILES.$this->pathController.$this->nameController.'.php';
-                if(file_exists($path)){
-                    require_once($path);
-                    $this->controller = new $this->nameController();
-                    return true;
-                }else{
-                    return false;
-                }
+                require_once(PATH_FILES.$this->pathController.$this->nameController.'.php');
+                $this->controller = new $this->nameController();
+                return true;
             }elseif(file_exists(PATH_FILES.$this->pathController.$this->defaultController.'.php')){
-                $path = PATH_FILES.$this->pathController.$this->defaultController.'.php';
-                if(file_exists($path)){
-                    require_once($path);
-                    $this->controller = new $this->defaultController();
-                    return true;
-                }else{
-                    return false;
-                }
+                require_once(PATH_FILES.$this->pathController.$this->defaultController.'.php');
+                $this->controller = new $this->defaultController();
+                return true;
             }else{
                 print('Não encontrado!');
                 return false;
@@ -61,17 +55,13 @@
 
         /* Carrega método correspondente a action informada na url */
         private function CallAction(){
-            $action = ($this->nameAction <> '' ? $this->nameAction : $this->defaultController);
-            if(method_exists($this->controller, $this->nameAction)){
-                if (count($this->attribute) > 0){
-                    $this->controller->$action($this->attribute);
-                }else{
-                    $this->controller->$action();
-                }
+            $action = $this->nameAction;
+            if (count($this->attribute) > 0){
+                $this->controller->$action($this->attribute);
             }else{
-                $action = 'pageError';
                 $this->controller->$action();
             }
+            
         }
 
         /* Gera atributos que são passados ao métodos das classes */

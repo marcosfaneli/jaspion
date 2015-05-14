@@ -1,10 +1,19 @@
 <?php
 	class database extends General{
 		protected $db;
+		protected $table;
 
 		public function __construct(){
 			$this->db = new PDO('mysql:host=localhost;dbname=default;','root','');
 		}
+
+		public function SqlValue($value){
+        	if (!is_numeric($value)) {
+        		return '"'.$value.'"';
+        	}else{
+        		return $value;
+        	}
+        }
 
 		/*
 			Funções básicas de CRUD
@@ -12,39 +21,60 @@
 			Opções: equal -> usa "=" na clausula WHERE
 				    like  -> usa "LIKE" na clausula WHERE
 		*/
-		protected function Read($table, array $where, $option = 'equal'){
-			$sql = "SELECT * FROM ".$table;
-			if(isset($where){
-				foreach ($where as $index => $value) {
-					if (strlen($str)) {
-						$str = $str.' AND ';
+
+		public function opensql($sql){
+			$qry = $this->db->query($sql);
+			$qry->setFetchMode(PDO::FETCH_ASSOC);
+			return $qry->fetch(PDO::FETCH_ASSOC);
+		}
+
+		public function read($table, array $where = null, $option = 'equal', array $fields = null){
+
+			try{
+				$strFields = (count($fields) > 0 ? implode($fields, ', ') : '*');
+
+				$sql = 'SELECT '.$strFields.' FROM '.$table;
+
+				if(count($where) > 0){				
+					$str = '';
+					foreach ($where as $index => $value) {
+						if (strlen($str)) {
+							$str = $str.' AND ';
+						}
+						switch ($option) {
+							case 'equal':
+								$str = $index.' = '.$this->SqlValue($value);
+								break;
+							case 'like':
+								$str = $index.' LIKE '.$this->SqlValue('%'.$value.'%');
+								break;
+							default:
+								$str = $index.' = '.$this->SqlValue($value);
+								break;
+						}
 					}
-					switch ($option) {
-						case 'equal':
-							$str = $index.' = '.$this->formatValue($value);
-							break;
-						case 'like':
-							$str = $index.' LIKE "%'.$this->formatValue($value).'%"';
-							break;
-						default:
-							$str = $index.' = '.$this->formatValue($value);
-							break;
-					}
+					$sql = $sql.' '.$str;
 				}
-				$sql = $sql.' '.$str;
+
+				if(strlen($sql) > 0){
+					$qry = $this->db->query($sql);
+					$qry->setFetchMode(PDO::FETCH_ASSOC);
+					return $qry->fetchAll();
+				}
+			}catch(Exception $e){
+				return $e->getMessage();
 			}
-			print($sql);
 		}
 
-		protected function Insert(){
+		public function insert(){
 			
 		}
 
-		protected function Update(){
+		public function update(){
 			
 		}
 
-		protected function Delete(){
+		public function delete(){
 			
 		}
 	}

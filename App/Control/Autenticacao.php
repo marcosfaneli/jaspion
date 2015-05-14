@@ -1,8 +1,8 @@
 <?php
-	require_once(PATH_FILES.'/Core/Control.php');
-
-    Class autenticacao extends Control{
-        public function freeconect(Array $value){
+    class autenticacao extends Control{
+        public function openconnect(Array $value){
+            $db = new autenticacaoModel();
+            print_r($db->read('sys_empresa'));
             return true;
         }
 
@@ -11,7 +11,7 @@
         	
         }
 
-        public function logoff(){
+        public function logout(){
         	return true;
         }
     }

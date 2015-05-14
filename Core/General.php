@@ -1,20 +1,14 @@
 <?php
-    abstract class General{
-        protected $pathController = '/App/Control/';
-        protected $pathModel = '/App/Model/Model/';
-        protected $pathView = '/App/View/';
-        protected $defaultController = 'Index';
-        protected $defaultAction = 'Index';
-        protected $commonFiles = '/Core/Files/';
-        public $path = 'uahca uahca uahca';
+    abstract class general{
+        protected $pathController = '/app/control/';
+        protected $pathModel = '/app/model/';
+        protected $pathView = '/app/view/';
+        protected $defaultController = 'site';
+        protected $defaultAction = 'index';
+        protected $commonFiles = '/core/Files/';
+        public $jsDir  = '/__js/';
+        public $cssDir = '/__css/';
+        public $imgDir = '/__css/imgs/';
         public $systemName = 'Jaspion';
-
-        public function formatValues($value){
-        	if (!is_numeric($value)) {
-        		return '"'.$value.'"';
-        	}else{
-        		return $value;
-        	}
-        }
     }
 ?>
