@@ -1,2 +1,2 @@
 # Jaspion FrameWork
-Framework MVC PHP com intuito de estudo com da linguagem web e estruturação MVC.
+Framework MVC PHP com intuito de aprendizado com a linguagem e padronização MVC.
